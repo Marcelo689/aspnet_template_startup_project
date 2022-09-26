@@ -1,0 +1,119 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+@model Teste;
+<div class="text-center">
+    
+    <form asp-action="resumo" method="post">
+        <input type="file" id="file"/>
+        <button onclick="importar()" id="botaoImportar">Importar</button>
+        <p id="textarea"></p>
+        <div class="cshrap">
+            @Model.Nome @Model.Sobrenome();
+        </div>
+    </form>
+</div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2022 - challange - <a asp-area="" asp-controller="Teste" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+<script>
+    function nomeDoArquivo(caminho) {
+        if (caminho) {
+        var startIndex = (caminho.indexOf('\\') >= 0 ? caminho.lastIndexOf('\\') : fullPath.lastIndexOf('/'));
+        var filename = caminho.substring(startIndex);
+        if (filename.indexOf('\\') === 0 || filename.indexOf('/') === 0) {
+            filename = filename.substring(1);
+        }
+            return filename;
+        }
+    }
+
+    function importar(){
+        var inputFile = document.getElementById("file");
+        var textarea = document.getElementById("textarea");
+        var caminho = inputFile.value; 
+        
+        let nomeArquivo = nomeDoArquivo(caminho);
+        let file = inputFile.files[0];
+        let saida = inputFile.files;
+        //console.log("nome do arquivo = " + nomeArquivo);
+        //console.log("tamanho do arquivo = " + file.name + "  -- " + file.size + "bytes");
+        let reader = new FileReader();
+        var conteudoString = "";
+
+        var conteudoArray = new Array();
+        reader.onload = function(e) {
+            conteudoString = e.target.result;
+
+            if (conteudoString.length != 0) {
+                console.log("conteudo = " + conteudoString);
+                PreencheDadosNoBanco(conteudoString.split("\n"));
+            } else
+                console.log("ERRO, ARQUIVO VAZIO!");
+            
+        };
+        
+        reader.readAsText(file);
+        var dataValida;
+        textarea.innerHTML = conteudoArray.length;
+
+        function PreencheDadosNoBanco(conteudoArray) {
+            if (conteudoArray)
+                for (var i = 0; i < conteudoArray.length - 1; i++) {
+                    var linha = conteudoArray[i];
+                    var indiceInicioData = linha.lastIndexOf(",");
+                    var stringData = linha.substring(indiceInicioData);
+                    var data = Date.parse(stringData);
+
+                    if (i == 0) {
+                        dataValida = data;
+                    }
+
+                    if ((i > 0 && i < linha.length - 2)) {
+                        if (dataValida != data)
+                            continue;
+                    } else {
+                        if (!validaTransacao(linha))
+                            continue;
+
+                        //salvar no banco
+                        textarea.innerHTML += linha + "\n";
+
+                    }
+                }
+            else
+                console.log("Arquivo Inválido = " + conteudoArray);
+            }
+
+        function validaTransacao(linha) {
+            if (transacaoJaExiteNoBanco(linha)) {
+                    if (transacaoFaltaDados(linha)) {
+                        console.log("Transação ingorada por falta de dados!");
+                        return false;
+                    }
+                    console.log("transação já inserida no banco!");
+                    return false;
+            }
+            return true;
+        }
+
+        function transacaoJaExiteNoBanco(linha) {
+            return textarea.innerHTML.includes(linha);
+        }
+
+        function transacaoFaltaDados(linha) {
+            var arrayDadosLinha = linha.split(",");
+            arrayDadosLinha.forEach(
+                function(e) {
+                    if (e)
+                        return true;
+                    return false;
+                }
+            );
+        }
+    }
+</script>
