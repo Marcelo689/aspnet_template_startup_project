@@ -11,6 +11,7 @@ namespace ASPNETMVC5.Models
         public string Nome { get; set; }
         public string Sobrenome { get; set; }
         public DateTime DataCadastro { get; set; }
+        public bool QuerCertificado { get; set; }
 
     }
 }
