@@ -537,6 +537,10 @@
     <Compile Include="Migrations\202211200251328_adicionado propriedade certificado.designer.cs">
       <DependentUpon>202211200251328_adicionado propriedade certificado.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202211201157078_ColunaEmail.cs" />
+    <Compile Include="Migrations\202211201157078_ColunaEmail.designer.cs">
+      <DependentUpon>202211201157078_ColunaEmail.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Cliente.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -584,6 +588,7 @@
     <Content Include="Views\Clientes\Index.cshtml" />
     <Content Include="Views\Clientes\Teste.cshtml" />
     <Content Include="Views\Shared\_Saudacao.cshtml" />
+    <Content Include="Views\Clientes\TesteCreate.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -611,6 +616,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202211200251328_adicionado propriedade certificado.resx">
       <DependentUpon>202211200251328_adicionado propriedade certificado.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202211201157078_ColunaEmail.resx">
+      <DependentUpon>202211201157078_ColunaEmail.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

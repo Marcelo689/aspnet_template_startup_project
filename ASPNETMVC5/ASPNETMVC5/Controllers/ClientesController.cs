@@ -15,9 +15,43 @@ namespace ASPNETMVC5.Controllers
     {
         private Aula1Context db = new Aula1Context();
 
-        public string Saudacao()
+        //[ValidateInput(false)] remove a segurança, fazendo ser possivel receber dados não seguros por requisição
+
+        [OutputCache(Duration = 30, VaryByParam = "*")]
+        public ContentResult TesteContent()
         {
-            return "<h1>Alguma coisa</h1>";
+            return Content(DateTime.Now.ToString());
+        }
+        public ActionResult TesteCreate()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult TesteCreate([Bind(Include = "Id,Nome,Sobrenome,DataCadastro,QuerCertificado,Email")] Cliente cliente)
+        {
+            if (ModelState.IsValid)
+            {
+                cliente.DataCadastro = DateTime.Now;
+                db.Clientes.Add(cliente);
+                db.SaveChanges();
+                return RedirectToAction("Index");
+            }
+
+            return View(cliente);
+        }
+        public ActionResult TesteActionsResult()
+        {
+            //return Json(db.Clientes.ToList(), JsonRequestBehavior.AllowGet);
+            //return Content("Saida teste");
+            //return JavaScript("<script>alert('printando isso!')</script>");
+
+
+            //var myfile = System.IO.File.ReadAllBytes("wwwroot/Files/FileContentResult.pdf");
+            //return new FileContentResult(myfile, "application/pdf");
+            //return File(myfile, "application/pdf");
+            return new HttpUnauthorizedResult();
         }
         public ActionResult Teste()
         {
@@ -27,6 +61,8 @@ namespace ASPNETMVC5.Controllers
             return View(lista);
         }
         // GET: Clientes
+
+        [HttpGet]
         public ActionResult Index()
         {
             return View(db.Clientes.ToList());
@@ -58,10 +94,16 @@ namespace ASPNETMVC5.Controllers
         // Para obter mais detalhes, confira https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,Nome,Sobrenome,DataCadastro,QuerCertificado")] Cliente cliente)
+        public ActionResult Create([Bind(Include = "Id,Nome,Sobrenome,DataCadastro,QuerCertificado,Email")] Cliente cliente)
         {
             if (ModelState.IsValid)
             {
+                if (!cliente.Email.Contains(".br"))
+                {
+                    ModelState.AddModelError(String.Empty, "Email não pode ser internacional!");
+                    return View(cliente);
+                }
+                cliente.DataCadastro = DateTime.Now;
                 db.Clientes.Add(cliente);
                 db.SaveChanges();
                 return RedirectToAction("Index");
@@ -71,6 +113,7 @@ namespace ASPNETMVC5.Controllers
         }
 
         // GET: Clientes/Edit/5
+        [HttpPost]
         public ActionResult Edit(int? id)
         {
             if (id == null)
@@ -109,6 +152,8 @@ namespace ASPNETMVC5.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             Cliente cliente = db.Clientes.Find(id);
+            //db.Clientes.Remove(cliente);
+            //db.SaveChanges();
             if (cliente == null)
             {
                 return HttpNotFound();
